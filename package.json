@@ -1,0 +1,20 @@
+{
+  "name": "lean-stack-auditor",
+  "version": "1.0.0",
+  "description": "> Find bundle bloat and replace it with vanilla JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^13.1.0",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {
+    "webpack-bundle-analyzer": "^4.10.2"
+  }
+}
