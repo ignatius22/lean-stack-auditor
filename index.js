@@ -82,7 +82,7 @@ function displayResults(results, verbose = false) {
   );
 
   if (verbose) {
-    console.log(chalk.bold('\n📋 All Dependencies:\n'));
+    console.log(chalk.bold("\n📋 All Dependencies:\n"));
     // Show all deps with sizes
   }
   if (results.bloat.length === 0) {
@@ -166,11 +166,11 @@ program
   .name("lean-stack-audit")
   .description("Find bundle bloat and replace it with vanilla JavaScript")
   .version("0.1.0")
-  .option('-v, --verbose', 'Show detailed analysis including all dependencies')
+  .option("-v, --verbose", "Show detailed analysis including all dependencies")
+  .option("-j, --json", "Output results as JSON for CI/CD integration")
   .action(async (options) => {
     showLogo();
 
-    // Check if package.json exists
     const packagePath = path.join(process.cwd(), "package.json");
     if (!fs.existsSync(packagePath)) {
       console.log(
@@ -181,11 +181,22 @@ program
     }
 
     try {
-      // Run analysis
       const results = await analyzeProject();
+
+      // JSON output for CI/CD
+      if (options.json) {
+        console.log(JSON.stringify(results, null, 2));
+        return;
+      }
+
+      // Pretty terminal output
       displayResults(results, options.verbose);
     } catch (error) {
-      console.log(chalk.red(`\n❌ Error: ${error.message}\n`));
+      if (options.json) {
+        console.log(JSON.stringify({ error: error.message }, null, 2));
+      } else {
+        console.log(chalk.red(`\n❌ Error: ${error.message}\n`));
+      }
       process.exit(1);
     }
   });
