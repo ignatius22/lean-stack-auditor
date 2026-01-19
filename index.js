@@ -1,127 +1,193 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import chalk from 'chalk';
-import ora from 'ora';
-import { existsSync } from 'fs';
-import { join } from 'path';
+import { Command } from "commander";
+import chalk from "chalk";
+import ora from "ora";
+import fs from "fs";
+import path from "path";
+import { parsePackageJson, getDependencyList } from "./lib/packageParser.js";
+import { analyzeDependencies } from "./lib/sizeAnalyzer.js";
+import { detectBloat } from "./lib/bloatDetector.js";
 
 const program = new Command();
 
 // ASCII Art Logo
 function showLogo() {
-  console.log(chalk.cyan(`
+  console.log(
+    chalk.cyan(`
 ╔═══════════════════════════════════════════╗
 ║                                           ║
 ║     🔍 LEAN STACK AUDITOR                ║
 ║     Find bloat. Ship faster.              ║
 ║                                           ║
 ╚═══════════════════════════════════════════╝
-  `));
+  `)
+  );
 }
 
-// Mock analysis function (we'll make this real later)
-function analyzeProject() {
-  const spinner = ora('Analyzing your project...').start();
-  
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      spinner.succeed(chalk.green('Analysis complete!'));
-      resolve({
-        totalSize: '2.4MB',
-        jsSize: '1.8MB',
-        cssSize: '600KB',
-        bloat: [
-          {
-            name: 'lodash',
-            size: '72KB',
-            used: '3 functions (debounce, throttle, cloneDeep)',
-            alternative: '15 lines vanilla JS',
-            savings: '72KB',
-            priority: 'HIGH'
-          },
-          {
-            name: 'moment.js',
-            size: '288KB',
-            used: 'Date formatting only',
-            alternative: 'Intl.DateTimeFormat (native)',
-            savings: '288KB',
-            priority: 'CRITICAL'
-          },
-          {
-            name: 'axios',
-            size: '14KB',
-            used: 'GET/POST requests only',
-            alternative: 'fetch API (native)',
-            savings: '14KB',
-            priority: 'MEDIUM'
-          }
-        ]
-      });
-    }, 2000);
-  });
+// Analyze project
+async function analyzeProject() {
+  const spinner = ora("Analyzing your project...").start();
+
+  try {
+    // Parse package.json
+    spinner.text = "Reading package.json...";
+    const packageData = parsePackageJson();
+
+    // Get dependencies
+    spinner.text = "Analyzing dependencies...";
+    const dependencies = getDependencyList(packageData);
+
+    // Analyze sizes
+    spinner.text = "Calculating bundle sizes...";
+    const analyzedDeps = analyzeDependencies(dependencies);
+
+    // Detect bloat
+    spinner.text = "Detecting bloat patterns...";
+    const bloat = detectBloat(analyzedDeps);
+
+    // Calculate totals
+    const totalSize = analyzedDeps.reduce((sum, dep) => sum + dep.sizeKB, 0);
+    const totalBloat = bloat.reduce((sum, dep) => sum + dep.savings, 0);
+
+    spinner.succeed(chalk.green("Analysis complete!"));
+
+    return {
+      projectName: packageData.name,
+      totalDependencies: dependencies.length,
+      totalSizeKB: totalSize,
+      totalSizeMB: (totalSize / 1024).toFixed(2),
+      bloat,
+      potentialSavingsKB: totalBloat,
+      potentialSavingsMB: (totalBloat / 1024).toFixed(2),
+      savingsPercent:
+        totalSize > 0 ? ((totalBloat / totalSize) * 100).toFixed(1) : 0,
+    };
+  } catch (error) {
+    spinner.fail(chalk.red("Analysis failed"));
+    throw error;
+  }
 }
 
 // Display results
-function displayResults(results) {
-  console.log(chalk.bold('\n📦 Bundle Analysis:\n'));
-  console.log(chalk.gray('Total bundle size: ') + chalk.yellow(results.totalSize));
-  console.log(chalk.gray('JavaScript: ') + chalk.yellow(results.jsSize));
-  console.log(chalk.gray('CSS: ') + chalk.yellow(results.cssSize));
-  
-  console.log(chalk.bold('\n⚠️  Bloat Detected:\n'));
-  
+function displayResults(results, verbose = false) {
+  console.log(chalk.bold("\n📦 Project Analysis:\n"));
+  console.log(chalk.gray("Project: ") + chalk.cyan(results.projectName));
+  console.log(
+    chalk.gray("Total dependencies: ") + chalk.yellow(results.totalDependencies)
+  );
+  console.log(
+    chalk.gray("Estimated bundle size: ") +
+      chalk.yellow(`${results.totalSizeMB}MB (${results.totalSizeKB}KB)`)
+  );
+
+  if (verbose) {
+    console.log(chalk.bold('\n📋 All Dependencies:\n'));
+    // Show all deps with sizes
+  }
+  if (results.bloat.length === 0) {
+    console.log(chalk.green("\n✨ Great! No common bloat patterns detected."));
+    console.log(chalk.gray("Your dependencies look lean!\n"));
+    return;
+  }
+
+  console.log(
+    chalk.bold(
+      `\n⚠️  Found ${results.bloat.length} Bloated ${
+        results.bloat.length === 1 ? "Dependency" : "Dependencies"
+      }:\n`
+    )
+  );
+
   results.bloat.forEach((item, index) => {
-    const priorityColor = item.priority === 'CRITICAL' ? chalk.red :
-                         item.priority === 'HIGH' ? chalk.yellow :
-                         chalk.blue;
-    
-    console.log(priorityColor(`${index + 1}. ${item.name} (${item.size})`));
-    console.log(chalk.gray(`   Used: ${item.used}`));
+    const priorityColor =
+      item.priority === "CRITICAL"
+        ? chalk.red
+        : item.priority === "HIGH"
+        ? chalk.yellow
+        : chalk.blue;
+
+    console.log(priorityColor(`${index + 1}. ${item.name} (${item.sizeKB}KB)`));
+    console.log(chalk.gray(`   Reason: ${item.reason}`));
+    console.log(chalk.gray(`   Common usage: ${item.commonUsage}`));
     console.log(chalk.green(`   Alternative: ${item.alternative}`));
-    console.log(chalk.cyan(`   Savings: ${item.savings}`));
+    console.log(chalk.cyan(`   Potential savings: ${item.savings}KB`));
     console.log(priorityColor(`   Priority: ${item.priority}`));
-    console.log('');
+
+    // Show vanilla code example
+    if (item.vanillaCode) {
+      console.log(chalk.bold("\n   💡 Vanilla JS Alternative:"));
+      console.log(chalk.dim(item.vanillaCode));
+    }
+    console.log("");
   });
-  
-  const totalSavings = results.bloat.reduce((acc, item) => {
-    return acc + parseInt(item.savings);
-  }, 0);
-  
-  console.log(chalk.bold('💰 Total potential savings: ') + chalk.green(`${totalSavings}KB (20.7% reduction)`));
-  console.log(chalk.gray('Estimated load time improvement: ') + chalk.green('1.2 seconds'));
-  
-  console.log(chalk.bold('\n📊 Cost Impact:'));
-  const monthlyCost = (totalSavings / 1024) * 100; // Assuming 100K monthly users
-  console.log(chalk.gray(`   ${totalSavings}KB × 100K users = ${(totalSavings * 100 / 1024).toFixed(1)}GB transfer`));
-  console.log(chalk.gray(`   At $0.12/GB (Vercel): `) + chalk.yellow(`$${monthlyCost.toFixed(2)}/month saved`));
-  console.log(chalk.gray(`   Annual savings: `) + chalk.green(`$${(monthlyCost * 12).toFixed(2)}`));
-  
-  console.log(chalk.bold('\n🚀 Next Steps:'));
-  console.log(chalk.gray('   1. Review the vanilla JS alternatives'));
-  console.log(chalk.gray('   2. Start with CRITICAL priority items'));
-  console.log(chalk.gray('   3. Run this tool after each optimization\n'));
+
+  console.log(
+    chalk.bold("💰 Total Potential Savings: ") +
+      chalk.green(
+        `${results.potentialSavingsMB}MB (${results.potentialSavingsKB}KB)`
+      )
+  );
+  console.log(
+    chalk.bold("📊 Bundle Reduction: ") +
+      chalk.green(`${results.savingsPercent}%`)
+  );
+
+  if (results.potentialSavingsKB > 0) {
+    console.log(chalk.bold("\n💵 Cost Impact (100K monthly users):"));
+    const monthlyGB = (results.potentialSavingsKB * 100000) / 1024 / 1024;
+    const monthlyCost = monthlyGB * 0.12; // Vercel pricing
+    console.log(
+      chalk.gray(`   Data transfer saved: `) +
+        chalk.yellow(`${monthlyGB.toFixed(2)}GB/month`)
+    );
+    console.log(
+      chalk.gray(`   Monthly savings (Vercel): `) +
+        chalk.green(`$${monthlyCost.toFixed(2)}`)
+    );
+    console.log(
+      chalk.gray(`   Annual savings: `) +
+        chalk.green(`$${(monthlyCost * 12).toFixed(2)}`)
+    );
+  }
+
+  console.log(chalk.bold("\n🚀 Next Steps:"));
+  console.log(chalk.gray("   1. Review CRITICAL priority items first"));
+  console.log(chalk.gray("   2. Copy the vanilla JS code above"));
+  console.log(chalk.gray("   3. Test replacements in development"));
+  console.log(chalk.gray("   4. Run this tool again after optimizations\n"));
+
+  // Add a tip
+  console.log(chalk.dim("💡 Tip: Run with --verbose for detailed analysis\n"));
 }
 
 // Main command
 program
-  .name('lean-stack-audit')
-  .description('Find bundle bloat and replace it with vanilla JavaScript')
-  .version('0.1.0')
-  .action(async () => {
+  .name("lean-stack-audit")
+  .description("Find bundle bloat and replace it with vanilla JavaScript")
+  .version("0.1.0")
+  .option('-v, --verbose', 'Show detailed analysis including all dependencies')
+  .action(async (options) => {
     showLogo();
-    
+
     // Check if package.json exists
-    const packagePath = join(process.cwd(), 'package.json');
-    if (!existsSync(packagePath)) {
-      console.log(chalk.red('❌ Error: No package.json found in current directory'));
-      console.log(chalk.gray('   Run this command in your project root\n'));
+    const packagePath = path.join(process.cwd(), "package.json");
+    if (!fs.existsSync(packagePath)) {
+      console.log(
+        chalk.red("❌ Error: No package.json found in current directory")
+      );
+      console.log(chalk.gray("   Run this command in your project root\n"));
       process.exit(1);
     }
-    
-    // Run analysis
-    const results = await analyzeProject();
-    displayResults(results);
+
+    try {
+      // Run analysis
+      const results = await analyzeProject();
+      displayResults(results, options.verbose);
+    } catch (error) {
+      console.log(chalk.red(`\n❌ Error: ${error.message}\n`));
+      process.exit(1);
+    }
   });
 
 program.parse();
