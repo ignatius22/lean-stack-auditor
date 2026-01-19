@@ -14,9 +14,12 @@
     "bundle",
     "optimization",
     "vanilla-js",
-    "performance"
+    "performance",
+    "webpack",
+    "nextjs",
+    "react"
   ],
-  "author": "Ignatius",
+  "author": "Ignatius Sani",
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.6.2",
