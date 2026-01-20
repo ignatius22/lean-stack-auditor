@@ -1,8 +1,12 @@
+cat > .npmignore << EOF
 node_modules/
 .git/
 .DS_Store
 *.log
-test-bloated-app/
+test/
 demo/
 .github/
 *.cast
+.env
+test-bloated-app/
+EOF

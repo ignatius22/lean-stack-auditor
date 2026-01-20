@@ -1,0 +1,776 @@
+/* ===================================
+   LEAN STACK AUDITOR - Landing Page
+   =================================== */
+
+/* CSS Variables */
+:root {
+  --primary: #667eea;
+  --primary-dark: #5a67d8;
+  --secondary: #764ba2;
+  --text: #2d3748;
+  --text-light: #4a5568;
+  --bg: #f7fafc;
+  --white: #ffffff;
+  --success: #68d391;
+  --danger: #fc8181;
+  --warning: #f6ad55;
+  --info: #4fd1c5;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --transition: all 0.3s ease;
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===================================
+   Hero Section
+   =================================== */
+.hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: var(--white);
+  padding: 120px 20px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.2;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.hero-icon {
+  width: 56px;
+  height: 56px;
+  stroke-width: 2.5;
+}
+
+.hero .subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+  opacity: 0.95;
+  font-weight: 400;
+  position: relative;
+}
+
+/* Install Box */
+.install-box {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  padding: 30px;
+  max-width: 600px;
+  margin: 40px auto;
+  position: relative;
+}
+
+.install-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+
+.install-cmd {
+  font-family: "Monaco", "Menlo", "Courier New", monospace;
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.install-cmd:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.install-cmd.copied::after {
+  content: "Copied!";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: var(--success);
+  animation: fadeIn 0.3s ease;
+}
+
+.copy-hint {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* CTA Buttons */
+.cta-buttons {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.btn {
+  display: inline-block;
+  padding: 16px 32px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--white);
+  color: var(--primary);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ===================================
+   Problem Section
+   =================================== */
+.problem {
+  padding: 100px 20px;
+  background: var(--white);
+  text-align: center;
+}
+
+.problem h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: var(--text);
+}
+
+.problem-text {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  max-width: 900px;
+  margin: 0 auto 60px;
+  line-height: 1.8;
+}
+
+.problem-vs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.problem-card {
+  padding: 40px;
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition: var(--transition);
+}
+
+.problem-card:hover {
+  transform: translateY(-5px);
+}
+
+.problem-card.before {
+  background: #fff5f5;
+  border: 2px solid var(--danger);
+}
+
+.problem-card.after {
+  background: #f0fff4;
+  border: 2px solid var(--success);
+}
+
+.problem-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.problem-card .card-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.problem-card.before .card-icon {
+  color: var(--danger);
+}
+
+.problem-card.after .card-icon {
+  color: var(--success);
+}
+
+.problem-card ul {
+  list-style: none;
+  font-size: 1.1rem;
+  line-height: 2;
+}
+
+.problem-card ul li::before {
+  content: "\2192";
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+/* ===================================
+   Features Section
+   =================================== */
+.features {
+  padding: 100px 20px;
+  background: var(--bg);
+}
+
+.features h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.features-subtitle {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-light);
+  margin-bottom: 60px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature {
+  background: var(--white);
+  padding: 40px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.feature-icon {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 70px;
+  margin-left: auto;
+  margin-right: auto;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  border-radius: 16px;
+}
+
+.feature-icon svg {
+  width: 36px;
+  height: 36px;
+  color: var(--white);
+  stroke-width: 2;
+}
+
+.feature h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--primary);
+}
+
+.feature p {
+  color: var(--text-light);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* ===================================
+   Demo Section
+   =================================== */
+.demo {
+  padding: 100px 20px;
+  background: var(--white);
+}
+
+.demo h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 60px;
+}
+
+.demo-output {
+  background: #1a202c;
+  color: #e2e8f0;
+  padding: 40px;
+  border-radius: var(--radius-md);
+  font-family: "Monaco", "Menlo", "Courier New", monospace;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow-x: auto;
+  box-shadow: var(--shadow-lg);
+  white-space: pre-line;
+}
+
+.demo-output .header {
+  color: var(--info);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.demo-output .critical {
+  color: var(--danger);
+}
+
+.demo-output .high {
+  color: var(--warning);
+}
+
+.demo-output .green {
+  color: var(--success);
+}
+
+.demo-output .cyan {
+  color: var(--info);
+}
+
+.demo-output .gray {
+  color: #a0aec0;
+}
+
+.demo-output .yellow {
+  color: #f6e05e;
+}
+
+.demo-output .bold {
+  font-weight: bold;
+}
+
+.demo-output .line {
+  display: block;
+  margin: 5px 0;
+}
+
+/* ===================================
+   Stats Section
+   =================================== */
+.stats {
+  padding: 100px 20px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: var(--white);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.stat {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: var(--transition);
+}
+
+.stat.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stat h3 {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.stat p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* ===================================
+   Libraries Table Section
+   =================================== */
+.libraries {
+  padding: 100px 20px;
+  background: var(--bg);
+}
+
+.libraries h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 60px;
+}
+
+.libraries-table {
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.libraries-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.libraries-table th,
+.libraries-table td {
+  padding: 20px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.libraries-table th {
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.libraries-table tr {
+  transition: var(--transition);
+}
+
+.libraries-table tbody tr:hover {
+  background: #f7fafc;
+}
+
+.libraries-table td {
+  font-size: 1.05rem;
+}
+
+.libraries-table tr:last-child td {
+  border-bottom: none;
+}
+
+.libraries-table .lib-name {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.libraries-table .size {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.libraries-table .more-row {
+  text-align: center;
+  font-style: italic;
+  color: #a0aec0;
+}
+
+/* ===================================
+   Final CTA Section
+   =================================== */
+.final-cta {
+  padding: 100px 20px;
+  background: var(--white);
+  text-align: center;
+}
+
+.final-cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.final-cta p {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  margin-bottom: 40px;
+}
+
+.final-cta .install-box {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+.final-cta .install-cmd {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.final-cta .install-cmd:hover {
+  background: var(--primary-dark);
+}
+
+.final-cta .btn-secondary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.final-cta .btn-secondary:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* ===================================
+   Footer
+   =================================== */
+footer {
+  padding: 60px 20px;
+  background: #2d3748;
+  color: var(--white);
+  text-align: center;
+}
+
+.footer-content p {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.footer-content .author {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.footer-content .tagline {
+  opacity: 0.8;
+}
+
+.footer-links {
+  margin: 30px 0;
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--white);
+  text-decoration: none;
+  font-size: 1.05rem;
+  opacity: 0.8;
+  transition: var(--transition);
+  position: relative;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--white);
+  transition: var(--transition);
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}
+
+.footer-note {
+  margin-top: 40px;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+/* ===================================
+   Animations
+   =================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease forwards;
+}
+
+/* ===================================
+   Responsive Design
+   =================================== */
+@media (max-width: 768px) {
+  .hero {
+    padding: 80px 20px 60px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .hero .subtitle {
+    font-size: 1.2rem;
+  }
+
+  .install-cmd {
+    font-size: 1rem;
+    padding: 15px;
+  }
+
+  .problem-vs {
+    grid-template-columns: 1fr;
+  }
+
+  .problem-card {
+    padding: 30px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature {
+    padding: 30px;
+  }
+
+  .demo-output {
+    padding: 20px;
+    font-size: 0.85rem;
+  }
+
+  .stat h3 {
+    font-size: 3rem;
+  }
+
+  .libraries-table th,
+  .libraries-table td {
+    padding: 15px 10px;
+    font-size: 0.95rem;
+  }
+
+  .final-cta h2,
+  .problem h2,
+  .features h2,
+  .demo h2,
+  .libraries h2 {
+    font-size: 2rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .install-box {
+    padding: 20px;
+  }
+
+  .stat h3 {
+    font-size: 2.5rem;
+  }
+
+  .stats-grid {
+    gap: 40px;
+  }
+}
