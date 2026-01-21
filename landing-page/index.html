@@ -169,16 +169,16 @@
 
 <span class="bold">┌ Project Analysis:</span>
 │  Project: my-app
-│  Total dependencies: 8
-│  Estimated bundle size: 527KB
+│  Total dependencies: 3
+│  Bundle size (minified+gzipped): 127KB
 
-<span class="bold">┌ Found 8 Bloated Dependencies:</span>
+<span class="bold">┌ Found 3 Bloated Dependencies:</span>
 
-<span class="critical">1. moment.js (288KB) - CRITICAL</span>
+<span class="critical">1. moment.js (72KB) - CRITICAL</span>
    Reason: Deprecated and very heavy
    Common usage: Date formatting
    Alternative: Intl.DateTimeFormat (native)
-   <span class="cyan">Potential savings: 288KB</span>
+   <span class="cyan">Potential savings: 72KB</span>
 
 <span class="bold">┌ Vanilla JS Alternative:</span>
 <span class="gray">   const formatted = new Intl.DateTimeFormat('en-US', {
@@ -187,21 +187,21 @@
      day: 'numeric'
    }).format(new Date());</span>
 
-<span class="high">2. jQuery (87KB) - HIGH</span>
+<span class="high">2. jQuery (30KB) - HIGH</span>
    Alternative: Native DOM APIs
-   <span class="cyan">Savings: 87KB</span>
+   <span class="cyan">Savings: 30KB</span>
 
-<span class="high">3. lodash (72KB) - HIGH</span>
+<span class="high">3. lodash (25KB) - HIGH</span>
    Alternative: Vanilla JS (15 lines)
-   <span class="cyan">Savings: 72KB</span>
+   <span class="cyan">Savings: 25KB</span>
 
 <span class="bold">┌ Total Potential Savings:</span>
-   <span class="green">527KB (100%)</span>
+   <span class="green">127KB (100%)</span>
 
 <span class="bold">┌ Cost Impact (100K monthly users):</span>
-   Data transfer saved: <span class="yellow">50.26GB/month</span>
-   Monthly savings (Vercel): <span class="green">$6.03</span>
-   Annual savings: <span class="green">$72.37</span></div>
+   Data transfer saved: <span class="yellow">12.11GB/month</span>
+   Monthly savings (Vercel): <span class="green">$1.45</span>
+   Annual savings: <span class="green">$17.44</span></div>
       </div>
     </section>
 
@@ -246,17 +246,17 @@
             <tbody>
               <tr>
                 <td class="lib-name">moment.js</td>
-                <td class="size">288KB</td>
+                <td class="size">72KB</td>
                 <td>Intl.DateTimeFormat</td>
               </tr>
               <tr>
                 <td class="lib-name">jQuery</td>
-                <td class="size">87KB</td>
+                <td class="size">30KB</td>
                 <td>Native DOM APIs</td>
               </tr>
               <tr>
                 <td class="lib-name">lodash</td>
-                <td class="size">72KB</td>
+                <td class="size">25KB</td>
                 <td>Vanilla JS functions</td>
               </tr>
               <tr>
