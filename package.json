@@ -1,6 +1,6 @@
 {
   "name": "lean-stack-auditor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Find bundle bloat and replace it with vanilla JavaScript",
   "type": "module",
   "main": "index.js",
