@@ -26,17 +26,17 @@ npx lean-stack-auditor
 ## Example Output
 ```
 📦 Project Analysis:
-Total dependencies: 8
-Estimated bundle size: 527KB
+Total dependencies: 3
+Bundle size (minified+gzipped): 127KB
 
-⚠️  Found 8 Bloated Dependencies:
+⚠️  Found 3 Bloated Dependencies:
 
-1. moment.js (288KB) - CRITICAL
+1. moment.js (72KB) - CRITICAL
    Alternative: Intl.DateTimeFormat (native)
-   Savings: 288KB
+   Savings: 72KB
    
-💰 Total Savings: 527KB
-💵 Annual Cost Savings: $72.37
+💰 Total Savings: 127KB
+💵 Annual Cost Savings: $17.44
 ```
 
 ## Options

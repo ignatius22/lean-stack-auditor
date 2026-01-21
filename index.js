@@ -6,7 +6,7 @@ import ora from "ora";
 import fs from "fs";
 import path from "path";
 import { parsePackageJson, getDependencyList } from "./lib/packageParser.js";
-import { analyzeDependencies } from "./lib/sizeAnalyzer.js";
+import { analyzeDependencies, formatSize } from "./lib/sizeAnalyzer.js";
 import { detectBloat } from "./lib/bloatDetector.js";
 
 const program = new Command();
@@ -38,7 +38,7 @@ async function analyzeProject() {
     spinner.text = "Analyzing dependencies...";
     const dependencies = getDependencyList(packageData);
 
-    // Analyze sizes
+    // Analyze sizes (uses curated minified+gzipped sizes)
     spinner.text = "Calculating bundle sizes...";
     const analyzedDeps = analyzeDependencies(dependencies);
 
@@ -54,14 +54,15 @@ async function analyzeProject() {
 
     return {
       projectName: packageData.name,
-      totalDependencies: dependencies.length,
-      totalSizeKB: totalSize,
+      totalDependencies: analyzedDeps.length,
+      totalSizeKB: Math.round(totalSize * 10) / 10,
       totalSizeMB: (totalSize / 1024).toFixed(2),
       bloat,
-      potentialSavingsKB: totalBloat,
+      potentialSavingsKB: Math.round(totalBloat * 10) / 10,
       potentialSavingsMB: (totalBloat / 1024).toFixed(2),
       savingsPercent:
         totalSize > 0 ? ((totalBloat / totalSize) * 100).toFixed(1) : 0,
+      analyzedDeps,
     };
   } catch (error) {
     spinner.fail(chalk.red("Analysis failed"));
@@ -77,14 +78,29 @@ function displayResults(results, verbose = false) {
     chalk.gray("Total dependencies: ") + chalk.yellow(results.totalDependencies)
   );
   console.log(
-    chalk.gray("Estimated bundle size: ") +
-      chalk.yellow(`${results.totalSizeMB}MB (${results.totalSizeKB}KB)`)
+    chalk.gray("Bundle size (minified+gzipped): ") +
+      chalk.yellow(formatSize(results.totalSizeKB))
   );
 
-  if (verbose) {
+  if (verbose && results.analyzedDeps) {
     console.log(chalk.bold("\n📋 All Dependencies:\n"));
-    // Show all deps with sizes
+
+    // Sort by size for better visualization
+    const deps = [...results.analyzedDeps].sort((a, b) => b.sizeKB - a.sizeKB);
+
+    deps.forEach((dep) => {
+      const sizeStr = formatSize(dep.sizeKB);
+
+      let colorFn = chalk.gray;
+      if (dep.sizeKB > 50) colorFn = chalk.red;
+      else if (dep.sizeKB > 20) colorFn = chalk.yellow;
+      else if (dep.sizeKB > 5) colorFn = chalk.white;
+
+      console.log(`   ${colorFn(sizeStr.padEnd(10))} ${dep.name}`);
+    });
+    console.log("");
   }
+
   if (results.bloat.length === 0) {
     console.log(chalk.green("\n✨ Great! No common bloat patterns detected."));
     console.log(chalk.gray("Your dependencies look lean!\n"));
@@ -105,14 +121,19 @@ function displayResults(results, verbose = false) {
         ? chalk.red
         : item.priority === "HIGH"
         ? chalk.yellow
-        : chalk.blue;
+        : item.priority === "MEDIUM"
+        ? chalk.blue
+        : chalk.gray;
 
-    console.log(priorityColor(`${index + 1}. ${item.name} (${item.sizeKB}KB)`));
+    console.log(
+      priorityColor(
+        `${index + 1}. ${item.name} (${formatSize(item.sizeKB)}) - ${item.priority}`
+      )
+    );
     console.log(chalk.gray(`   Reason: ${item.reason}`));
     console.log(chalk.gray(`   Common usage: ${item.commonUsage}`));
     console.log(chalk.green(`   Alternative: ${item.alternative}`));
-    console.log(chalk.cyan(`   Potential savings: ${item.savings}KB`));
-    console.log(priorityColor(`   Priority: ${item.priority}`));
+    console.log(chalk.cyan(`   Potential savings: ${formatSize(item.savings)}`));
 
     // Show vanilla code example
     if (item.vanillaCode) {
@@ -124,9 +145,7 @@ function displayResults(results, verbose = false) {
 
   console.log(
     chalk.bold("💰 Total Potential Savings: ") +
-      chalk.green(
-        `${results.potentialSavingsMB}MB (${results.potentialSavingsKB}KB)`
-      )
+      chalk.green(formatSize(results.potentialSavingsKB))
   );
   console.log(
     chalk.bold("📊 Bundle Reduction: ") +
@@ -158,14 +177,18 @@ function displayResults(results, verbose = false) {
   console.log(chalk.gray("   4. Run this tool again after optimizations\n"));
 
   // Add a tip
-  console.log(chalk.dim("💡 Tip: Run with --verbose for detailed analysis\n"));
+  if (!verbose) {
+    console.log(
+      chalk.dim("💡 Tip: Run with --verbose for detailed size breakdown\n")
+    );
+  }
 }
 
 // Main command
 program
   .name("lean-stack-audit")
   .description("Find bundle bloat and replace it with vanilla JavaScript")
-  .version("0.1.0")
+  .version("0.2.0")
   .option("-v, --verbose", "Show detailed analysis including all dependencies")
   .option("-j, --json", "Output results as JSON for CI/CD integration")
   .action(async (options) => {
@@ -185,7 +208,11 @@ program
 
       // JSON output for CI/CD
       if (options.json) {
-        console.log(JSON.stringify(results, null, 2));
+        // Remove analyzedDeps for cleaner JSON output unless verbose
+        const jsonOutput = options.verbose
+          ? results
+          : { ...results, analyzedDeps: undefined };
+        console.log(JSON.stringify(jsonOutput, null, 2));
         return;
       }
 
