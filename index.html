@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lean Stack Auditor - Find Bundle Bloat in 10 Seconds</title>
+    <meta
+      name="description"
+      content="Find bundle bloat and replace it with vanilla JavaScript. Get copy-paste alternatives for lodash, moment, jQuery, and 15+ more libraries."
+    />
+
+    <!-- Open Graph -->
+    <meta
+      property="og:title"
+      content="Lean Stack Auditor - Find Bundle Bloat in 10 Seconds"
+    />
+    <meta
+      property="og:description"
+      content="Analyze your dependencies and get vanilla JS alternatives with copy-paste code."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://leanstackauditor.com" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lean Stack Auditor" />
+    <meta
+      name="twitter:description"
+      content="Find bundle bloat in 10 seconds"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>"
+    />
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1><i data-lucide="search" class="hero-icon"></i> Lean Stack Auditor</h1>
+        <p class="subtitle">
+          Find bundle bloat and replace it with vanilla JavaScript
+        </p>
+
+        <div class="install-box">
+          <div class="install-label">Install Nothing. Just Run:</div>
+          <div class="install-cmd">npx lean-stack-auditor</div>
+          <div class="copy-hint">
+            Click to copy • Works with any JavaScript project
+          </div>
+        </div>
+
+        <div class="cta-buttons">
+          <a href="#demo" class="btn btn-primary">See Demo</a>
+          <a
+            href="https://github.com/ignatius22/lean-stack-auditor"
+            class="btn btn-secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+            >View on GitHub</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem">
+      <div class="container">
+        <h2>The Problem with Bundle Analysis Tools</h2>
+        <p class="problem-text">
+          Existing tools show you <strong>WHAT</strong> is bloated.<br />
+          Lean Stack Auditor shows you <strong>WHAT TO DO</strong> about it.
+        </p>
+
+        <div class="problem-vs">
+          <div class="problem-card before">
+            <h3><i data-lucide="x-circle" class="card-icon"></i> Other Tools</h3>
+            <ul>
+              <li>Show bundle size</li>
+              <li>Identify large libraries</li>
+              <li>Leave you to Google solutions</li>
+              <li>No actionable alternatives</li>
+            </ul>
+          </div>
+
+          <div class="problem-card after">
+            <h3><i data-lucide="check-circle" class="card-icon"></i> Lean Stack Auditor</h3>
+            <ul>
+              <li>Detects bloat automatically</li>
+              <li>Shows vanilla JS alternatives</li>
+              <li>Provides copy-paste code</li>
+              <li>Calculates cost savings</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+      <div class="container">
+        <h2>Everything You Need</h2>
+        <p class="features-subtitle">Analyze, optimize, and ship faster apps</p>
+
+        <div class="features-grid">
+          <div class="feature">
+            <span class="feature-icon"><i data-lucide="scan-search"></i></span>
+            <h3>Smart Detection</h3>
+            <p>
+              Automatically identifies 15+ bloated libraries in your
+              dependencies
+            </p>
+          </div>
+
+          <div class="feature">
+            <span class="feature-icon"><i data-lucide="lightbulb"></i></span>
+            <h3>Vanilla Alternatives</h3>
+            <p>
+              Get copy-paste ready vanilla JS code for every bloated library
+            </p>
+          </div>
+
+          <div class="feature">
+            <span class="feature-icon"><i data-lucide="piggy-bank"></i></span>
+            <h3>Cost Calculator</h3>
+            <p>See real bandwidth savings in dollars based on your traffic</p>
+          </div>
+
+          <div class="feature">
+            <span class="feature-icon"><i data-lucide="target"></i></span>
+            <h3>Priority System</h3>
+            <p>Focus on CRITICAL items first, then HIGH, MEDIUM, and LOW</p>
+          </div>
+
+          <div class="feature">
+            <span class="feature-icon"><i data-lucide="bar-chart-3"></i></span>
+            <h3>CI/CD Ready</h3>
+            <p>JSON output mode perfect for automated testing and workflows</p>
+          </div>
+
+          <div class="feature">
+            <span class="feature-icon"><i data-lucide="zap"></i></span>
+            <h3>10 Second Analysis</h3>
+            <p>Results in seconds. No installation or configuration needed</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo -->
+    <section class="demo" id="demo">
+      <div class="container">
+        <h2>See It In Action</h2>
+
+        <div class="demo-output"><span class="header">╔═══════════════════════════════════════════╗
+║         LEAN STACK AUDITOR                ║
+║         Find bloat. Ship faster.          ║
+╚═══════════════════════════════════════════╝</span>
+
+<span class="green">✔</span> Analysis complete!
+
+<span class="bold">┌ Project Analysis:</span>
+│  Project: my-app
+│  Total dependencies: 8
+│  Estimated bundle size: 527KB
+
+<span class="bold">┌ Found 8 Bloated Dependencies:</span>
+
+<span class="critical">1. moment.js (288KB) - CRITICAL</span>
+   Reason: Deprecated and very heavy
+   Common usage: Date formatting
+   Alternative: Intl.DateTimeFormat (native)
+   <span class="cyan">Potential savings: 288KB</span>
+
+<span class="bold">┌ Vanilla JS Alternative:</span>
+<span class="gray">   const formatted = new Intl.DateTimeFormat('en-US', {
+     year: 'numeric',
+     month: 'long',
+     day: 'numeric'
+   }).format(new Date());</span>
+
+<span class="high">2. jQuery (87KB) - HIGH</span>
+   Alternative: Native DOM APIs
+   <span class="cyan">Savings: 87KB</span>
+
+<span class="high">3. lodash (72KB) - HIGH</span>
+   Alternative: Vanilla JS (15 lines)
+   <span class="cyan">Savings: 72KB</span>
+
+<span class="bold">┌ Total Potential Savings:</span>
+   <span class="green">527KB (100%)</span>
+
+<span class="bold">┌ Cost Impact (100K monthly users):</span>
+   Data transfer saved: <span class="yellow">50.26GB/month</span>
+   Monthly savings (Vercel): <span class="green">$6.03</span>
+   Annual savings: <span class="green">$72.37</span></div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat">
+            <h3>15+</h3>
+            <p>Libraries Detected</p>
+          </div>
+          <div class="stat">
+            <h3>0KB</h3>
+            <p>Install Size</p>
+          </div>
+          <div class="stat">
+            <h3>10s</h3>
+            <p>Analysis Time</p>
+          </div>
+          <div class="stat">
+            <h3>100%</h3>
+            <p>Free & Open Source</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Libraries -->
+    <section class="libraries">
+      <div class="container">
+        <h2>What We Detect</h2>
+
+        <div class="libraries-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Library</th>
+                <th>Size</th>
+                <th>Vanilla Alternative</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="lib-name">moment.js</td>
+                <td class="size">288KB</td>
+                <td>Intl.DateTimeFormat</td>
+              </tr>
+              <tr>
+                <td class="lib-name">jQuery</td>
+                <td class="size">87KB</td>
+                <td>Native DOM APIs</td>
+              </tr>
+              <tr>
+                <td class="lib-name">lodash</td>
+                <td class="size">72KB</td>
+                <td>Vanilla JS functions</td>
+              </tr>
+              <tr>
+                <td class="lib-name">underscore</td>
+                <td class="size">16KB</td>
+                <td>ES6+ methods</td>
+              </tr>
+              <tr>
+                <td class="lib-name">axios</td>
+                <td class="size">14KB</td>
+                <td>fetch API</td>
+              </tr>
+              <tr>
+                <td class="lib-name">validator</td>
+                <td class="size">45KB</td>
+                <td>Regex patterns</td>
+              </tr>
+              <tr>
+                <td class="lib-name">uuid</td>
+                <td class="size">4KB</td>
+                <td>crypto.randomUUID()</td>
+              </tr>
+              <tr>
+                <td class="lib-name">classnames</td>
+                <td class="size">1KB</td>
+                <td>Template literals</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="more-row">And 7 more...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+      <div class="container">
+        <h2>Ready to Optimize Your Bundle?</h2>
+        <p>No installation required. Works with any JavaScript project.</p>
+
+        <div class="install-box">
+          <div class="install-cmd">npx lean-stack-auditor</div>
+        </div>
+
+        <div class="cta-buttons">
+          <a
+            href="https://www.npmjs.com/package/lean-stack-auditor"
+            class="btn btn-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+            >View on npm</a
+          >
+          <a
+            href="https://github.com/ignatius22/lean-stack-auditor"
+            class="btn btn-secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Star on GitHub</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <p class="author">Built by Ignatius Sani</p>
+          <p class="tagline">Deep JavaScript Without the Framework Tax</p>
+        </div>
+
+        <div class="footer-links">
+          <a
+            href="https://github.com/ignatius22/lean-stack-auditor"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://www.npmjs.com/package/lean-stack-auditor"
+            target="_blank"
+            rel="noopener noreferrer"
+            >npm</a
+          >
+          <a
+            href="https://medium.com/@iggy01"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Medium</a
+          >
+          <a
+            href="https://twitter.com/iggy_code"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Twitter</a
+          >
+        </div>
+
+        <div class="footer-note">
+          <p>MIT License © 2026</p>
+          <p>Launching January 28, 2026</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
