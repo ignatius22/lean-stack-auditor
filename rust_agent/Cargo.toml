@@ -1,5 +1,5 @@
 [package]
-name = "lean-stack-auditor-agent"
+name = "lean-stack-auditor"
 version = "0.1.0"
 edition = "2021"
 
