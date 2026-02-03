@@ -13,3 +13,4 @@ walkdir = "2.4"
 rayon = "1.8"
 colored = "2.1"
 anyhow = "1.0"
+openssl = { version = "0.10", features = ["vendored"] }

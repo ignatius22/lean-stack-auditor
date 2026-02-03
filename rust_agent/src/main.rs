@@ -192,8 +192,6 @@ fn run_node_engine(path: &str, fix: bool) {
     
     let exe_path = std::env::current_exe().expect("Failed to get current executable path");
     let bin_dir = exe_path.parent().expect("Failed to get binary directory");
-    // Go up one level from 'bin' to package root, then into 'node_engine'
-    let package_root = bin_dir.parent(); 
     
     // Check if we are in dev (target/debug/...) or prod
     // In dev: rust_agent/target/debug/agent. parent is debug. parent is target. parent is rust_agent. 
