@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const path = require('path');
+
+const BIN_NAME = process.platform === 'win32' ? 'lean-stack-auditor.exe' : 'lean-stack-auditor';
+const binPath = path.join(__dirname, BIN_NAME);
+
+const child = spawn(binPath, process.argv.slice(2), {
+  stdio: 'inherit'
+});
+
+child.on('exit', (code) => {
+  process.exit(code);
+});

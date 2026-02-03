@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            binary_name: lean-stack-auditor
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            binary_name: lean-stack-auditor
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            binary_name: lean-stack-auditor
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            binary_name: lean-stack-auditor.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build Binary
+        working-directory: rust_agent
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Rename Binary (Add Target)
+        shell: bash
+        run: |
+          mkdir -p dist
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cp rust_agent/target/${{ matrix.target }}/release/${{ matrix.binary_name }} dist/lean-stack-auditor-${{ matrix.target }}.exe
+          else
+            cp rust_agent/target/${{ matrix.target }}/release/${{ matrix.binary_name }} dist/lean-stack-auditor-${{ matrix.target }}
+          fi
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/*

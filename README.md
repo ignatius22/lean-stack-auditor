@@ -1,42 +1,65 @@
 # 🔍 Lean Stack Auditor
 
+
+[![Build Status](https://github.com/ignatius22/lean-stack-auditor/actions/workflows/release.yml/badge.svg)](https://github.com/ignatius22/lean-stack-auditor/actions)
 [![npm version](https://img.shields.io/npm/v/lean-stack-auditor.svg)](https://www.npmjs.com/package/lean-stack-auditor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Find bundle bloat and replace it with vanilla JavaScript.**
+**Find bundle bloat. Enforce policies. Ship faster.**
 
-Now powered by **esbuild** for accurate, real-world size analysis.
+Now powered by a **Rust Agent** 🦀 and a **SaaS Policy Engine** 🧠.
 
 ## Features
 
--   **🎯 Real-Time Analysis**: Uses `esbuild` to bundle your dependencies on-the-fly and calculate their *actual* minified + gzipped size. No more static guessing.
--   **👯 Duplicate Scanner**: Detects when you have multiple versions of the same library installed (e.g., `lodash` v3 and v4).
--   **🧹 Bloat Detection**: Automatically flags heavy libraries (Moment.js, Lodash, etc.) that can be replaced with native APIs.
--   **💡 Native Alternatives**: Provides copy-paste vanilla JS alternatives for common libraries.
--   **📊 Cost Calculator**: Estimates the bandwidth cost of your bundle bloat.
--   **🐢 Node.js Support**: Works for both frontend and backend projects (correctly handles `node:` builtins).
+## Architecture (v3.0)
 
-## Installation
+This tool is a hybrid **CLI Agent + SaaS Platform**:
+
+1.  **The Agent (Rust)**:
+    -   Runs in your CI/CD pipeline (GitHub Actions, etc.).
+    -   Scans `package.json` files in parallel using `rayon`.
+    -   Detects disallowed packages and enforcing bundle size limits.
+    -   "Phones home" to the API to authorize the build.
+
+2.  **The Backend (Node.js/Fastify)**:
+    -   Verifies license keys.
+    -   Enforces policies (e.g., Free Tier cannot have violations).
+    -   Ready for self-hosting with Docker.
+
+## Features
+
+-   **🚀 High Performance**: Rust-based scanner parses giant monorepos in milliseconds.
+-   **🛡️ Policy Enforcement**: Define a `lean-stack.config.json` to ban specific packages (e.g., "no moment.js").
+-   **🔑 License Management**: SaaS-ready architecture with Free/Paid tiers.
+-   **🐳 Production Ready**: Dockerized backend with a `/health` check for easy deployment to Railway/Render.
+-   **📦 Cross-Platform**: Pre-compiled binaries for Linux, macOS (Intel/Silicon), and Windows.
+
+## Quick Start
+
+### 1. Install the CLI
+The npm package automatically downloads the correct Rust binary for your OS:
 
 ```bash
-npx lean-stack-auditor
+npm install -g lean-stack-auditor@latest
 ```
 
-Or install globally:
+### 2. Configure Your Project
+Create a `lean-stack.config.json` in your root:
 
+```json
+{
+  "maxBundleSize": "200KB",
+  "disallowed": ["moment", "lodash"],
+  "licenseKey": "sk_free_12345"
+}
+```
+
+### 3. Run the Audit
 ```bash
-npm install -g lean-stack-auditor
+lean-stack-auditor
 ```
+(Exit Code 0 if clean, 1 if policies violated)
 
-## Usage
-
-Navigate to your project root (where `package.json` is) and run:
-
-```bash
-npx lean-stack-auditor
-```
-
-### Options
 
 ```bash
 # Verbose mode (See all dependencies, not just bloat)
@@ -102,10 +125,25 @@ lean-stack-auditor --check-budget
 
 ## How It Works
 
-1.  **Scans `package.json`**: Identifies your production dependencies.
-2.  **Bundles with `esbuild`**: Creates a temporary, minified bundle for each dependency to inspect its true weight.
-3.  **Matches Patterns**: Checks against a database of known "bloated" libraries to suggest native alternatives.
-4.  **Reports**: Gives you a clear, actionable report.
+## Self-Hosting the Backend
+
+You can run your own Policy Engine using the provided Docker image.
+
+### 1. Build & Run
+```bash
+cd saas_backend
+docker build -t lean-stack-backend .
+docker run -p 3000:3000 -e PORT=3000 -e NODE_ENV=production lean-stack-backend
+```
+
+### 2. Configure Environment
+Set these variables in your hosting provider (Railway, Render, etc.):
+- `PORT`: Port to listen on (default 3000).
+- `NODE_ENV`: Set to `production`.
+- `STRIPE_SECRET_KEY`: Your Stripe secret for paid tiers.
+
+### 3. Point the Agent (Optional)
+*Currently hardcoded to localhost for dev, update `main.rs` to point to your production URL.*
 
 ## License
 

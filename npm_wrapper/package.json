@@ -1,0 +1,23 @@
+{
+  "name": "lean-stack-auditor-wrapper",
+  "version": "1.0.0",
+  "description": "NPM Wrapper for Lean Stack Auditor Rust Binary",
+  "bin": {
+    "lean-stack-auditor": "./bin/lean-stack-auditor"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

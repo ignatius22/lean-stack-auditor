@@ -1,0 +1,5 @@
+{
+  "maxBundleSize": "200KB",
+  "disallowed": ["commander"],
+  "licenseKey": "sk_free_12345"
+}

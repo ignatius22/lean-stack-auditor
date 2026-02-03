@@ -1,2 +1,8 @@
 node_modules
 .env
+dist
+npm_wrapper/bin
+saas_backend/dist
+saas_backend/.env
+rust_agent/target
+.DS_Store
