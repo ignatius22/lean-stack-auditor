@@ -184,26 +184,46 @@ async fn verify_license(key: &str, violations: Vec<String>) -> anyhow::Result<bo
 }
 
 fn run_node_engine(path: &str, fix: bool) {
-    // Assumption: we are running from bin wrapper, so ../node_engine/index.js exists
-    // But for dev, we might be in rust_agent folder.
-    // Let's assume the standard dist structure: /bin/rust_binary -> /node_engine/index.js
+    // 1. Resolve absolute path to node_engine/index.js relative to this executable
+    // Structure:
+    //   /path/to/node_modules/lean-stack-auditor/bin/lean-stack-auditor (wrapper script) -> spawns binary
+    //   /path/to/node_modules/lean-stack-auditor/bin/lean-stack-auditor-binary (actual binary)
+    //   /path/to/node_modules/lean-stack-auditor/node_engine/index.js (target)
     
-    // Resolve helper script path. 
-    // In dev: ../node_engine/index.js
-    // In prod (npm): ../lib/node_modules/lean-stack-auditor/node_engine/index.js (tricky)
+    let exe_path = std::env::current_exe().expect("Failed to get current executable path");
+    let bin_dir = exe_path.parent().expect("Failed to get binary directory");
+    // Go up one level from 'bin' to package root, then into 'node_engine'
+    let package_root = bin_dir.parent(); 
     
-    // reliable way finding path relative to executable?
-    // simplified for now: assume we call it via npm wrapper which sets cwd correctly? 
-    // or just assume "node_engine" is neighbor.
+    // Check if we are in dev (target/debug/...) or prod
+    // In dev: rust_agent/target/debug/agent. parent is debug. parent is target. parent is rust_agent. 
+    // And node_engine is sibling of rust_agent.
+    
+    let mut script_path = std::path::PathBuf::new();
+    
+    // Simple heuristic: check relative to bin first (Prod), then dev fallback
+    let prod_path = bin_dir.join("../node_engine/index.js");
+    let dev_path = bin_dir.join("../../../node_engine/index.js"); // target/debug/deps -> ../../../
+    
+    if prod_path.exists() {
+        script_path = prod_path;
+    } else if dev_path.exists() {
+         script_path = dev_path;
+    } else {
+        // Fallback for local cargo run
+        script_path = std::path::PathBuf::from("node_engine/index.js");
+    }
+
+    let script_path = script_path.canonicalize().unwrap_or(script_path);
 
     let mut cmd = process::Command::new("node");
-    cmd.arg("node_engine/index.js"); 
+    cmd.arg(script_path); 
     
     if fix {
         cmd.arg("--fix");
     }
 
-    cmd.current_dir(path); // Run in the project root
+    cmd.current_dir(path); // Run Node in the project root
 
     // Pass through stdio
     cmd.stdout(process::Stdio::inherit())

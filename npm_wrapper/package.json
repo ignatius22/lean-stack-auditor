@@ -8,6 +8,11 @@
   "scripts": {
     "postinstall": "node install.js"
   },
+  "files": [
+    "bin",
+    "install.js",
+    "node_engine"
+  ],
   "dependencies": {
     "axios": "^1.6.0"
   },

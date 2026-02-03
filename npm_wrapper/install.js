@@ -5,7 +5,7 @@ const { execSync } = require('child_process');
 
 // Configuration
 const REPO = 'ignatius22/lean-stack-auditor';
-const VERSION = 'v2.3.0'; // Ideally fetched dynamically or matched to package.json version
+const VERSION = 'v3.0.0'; // Ideally fetched dynamically or matched to package.json version
 const BIN_DIR = path.join(__dirname, 'bin');
 const BIN_NAME = process.platform === 'win32' ? 'lean-stack-auditor.exe' : 'lean-stack-auditor';
 
