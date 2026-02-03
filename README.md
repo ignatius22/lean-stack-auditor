@@ -10,6 +10,7 @@ Now powered by **esbuild** for accurate, real-world size analysis.
 ## Features
 
 -   **🎯 Real-Time Analysis**: Uses `esbuild` to bundle your dependencies on-the-fly and calculate their *actual* minified + gzipped size. No more static guessing.
+-   **👯 Duplicate Scanner**: Detects when you have multiple versions of the same library installed (e.g., `lodash` v3 and v4).
 -   **🧹 Bloat Detection**: Automatically flags heavy libraries (Moment.js, Lodash, etc.) that can be replaced with native APIs.
 -   **💡 Native Alternatives**: Provides copy-paste vanilla JS alternatives for common libraries.
 -   **📊 Cost Calculator**: Estimates the bandwidth cost of your bundle bloat.
@@ -42,7 +43,11 @@ npx lean-stack-auditor
 lean-stack-auditor --verbose
 
 # JSON output (Great for CI/CD)
+# JSON output (Great for CI/CD)
 lean-stack-auditor --json
+
+# Auto-Fix Mode (Replace bloat with vanilla JS)
+lean-stack-auditor --fix
 ```
 
 ## Example Output
@@ -76,6 +81,24 @@ Bundle size (minified+gzipped): 127KB
 
 💰 Total Potential Savings: 97KB (76%)
 ```
+
+## Configuration (Budget Enforcer)
+
+Create a `lean-stack.config.json` to enforce limits in CI:
+
+```json
+{
+  "maxBundleSize": "150KB",
+  "disallowed": ["moment", "lodash"],
+  "allowDuplicates": false
+}
+```
+
+Run with:
+```bash
+lean-stack-auditor --check-budget
+```
+(Exits with code 1 if failed)
 
 ## How It Works
 
