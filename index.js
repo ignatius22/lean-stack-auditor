@@ -8,6 +8,7 @@ import path from "path";
 import { parsePackageJson, getDependencyList } from "./lib/packageParser.js";
 import { analyzeDependencies, formatSize } from "./lib/sizeAnalyzer.js";
 import { detectBloat } from "./lib/bloatDetector.js";
+import { runFixer } from "./lib/fixer.js";
 
 const program = new Command();
 
@@ -38,9 +39,9 @@ async function analyzeProject() {
     spinner.text = "Analyzing dependencies...";
     const dependencies = getDependencyList(packageData);
 
-    // Analyze sizes (uses curated minified+gzipped sizes)
-    spinner.text = "Calculating bundle sizes...";
-    const analyzedDeps = analyzeDependencies(dependencies);
+    // Analyze sizes (uses esbuild for real bundle size)
+    spinner.text = "Bundling dependencies to check real size (this may take a moment)...";
+    const analyzedDeps = await analyzeDependencies(dependencies);
 
     // Detect bloat
     spinner.text = "Detecting bloat patterns...";
@@ -191,6 +192,7 @@ program
   .version("0.2.0")
   .option("-v, --verbose", "Show detailed analysis including all dependencies")
   .option("-j, --json", "Output results as JSON for CI/CD integration")
+  .option("-f, --fix", "Automatically replace bloated libraries with vanilla JS")
   .action(async (options) => {
     showLogo();
 
@@ -218,6 +220,11 @@ program
 
       // Pretty terminal output
       displayResults(results, options.verbose);
+
+      // Run fixer if requested
+      if (options.fix && results.bloat.length > 0) {
+        await runFixer(results.bloat);
+      }
     } catch (error) {
       if (options.json) {
         console.log(JSON.stringify({ error: error.message }, null, 2));

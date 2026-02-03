@@ -1,62 +1,89 @@
-cat > README.md << 'EOF'
 # 🔍 Lean Stack Auditor
 
-Find bundle bloat and replace it with vanilla JavaScript.
+[![npm version](https://img.shields.io/npm/v/lean-stack-auditor.svg)](https://www.npmjs.com/package/lean-stack-auditor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Find bundle bloat and replace it with vanilla JavaScript.**
+
+Now powered by **esbuild** for accurate, real-world size analysis.
+
+## Features
+
+-   **🎯 Real-Time Analysis**: Uses `esbuild` to bundle your dependencies on-the-fly and calculate their *actual* minified + gzipped size. No more static guessing.
+-   **🧹 Bloat Detection**: Automatically flags heavy libraries (Moment.js, Lodash, etc.) that can be replaced with native APIs.
+-   **💡 Native Alternatives**: Provides copy-paste vanilla JS alternatives for common libraries.
+-   **📊 Cost Calculator**: Estimates the bandwidth cost of your bundle bloat.
+-   **🐢 Node.js Support**: Works for both frontend and backend projects (correctly handles `node:` builtins).
 
 ## Installation
+
 ```bash
 npx lean-stack-auditor
+```
+
+Or install globally:
+
+```bash
+npm install -g lean-stack-auditor
 ```
 
 ## Usage
 
-Navigate to your project and run:
+Navigate to your project root (where `package.json` is) and run:
+
 ```bash
-cd your-project
 npx lean-stack-auditor
 ```
 
-## What It Does
+### Options
 
-- Analyzes your dependencies
-- Detects bloated libraries (lodash, moment, jQuery, etc.)
-- Shows vanilla JS alternatives with copy-paste code
-- Calculates real cost savings
+```bash
+# Verbose mode (See all dependencies, not just bloat)
+lean-stack-auditor --verbose
+
+# JSON output (Great for CI/CD)
+lean-stack-auditor --json
+```
 
 ## Example Output
+
 ```
+🔍 LEAN STACK AUDITOR
+Find bloat. Ship faster.
+
+✔ Analysis complete!
+
 📦 Project Analysis:
-Total dependencies: 3
+Project: my-app
+Total dependencies: 12
 Bundle size (minified+gzipped): 127KB
 
-⚠️  Found 3 Bloated Dependencies:
+⚠ Found 3 Bloated Dependencies:
 
 1. moment.js (72KB) - CRITICAL
+   Reason: Deprecated and very heavy
+   Common usage: Date formatting
    Alternative: Intl.DateTimeFormat (native)
-   Savings: 72KB
-   
-💰 Total Savings: 127KB
-💵 Annual Cost Savings: $17.44
+   Potential savings: 72KB
+
+   💡 Vanilla JS Alternative:
+   const formatted = new Intl.DateTimeFormat('en-US').format(new Date());
+
+2. lodash (25KB) - HIGH
+   Reason: Most projects use only 3-5 functions
+   Alternative: Vanilla JS implementations
+   Potential savings: 25KB
+
+💰 Total Potential Savings: 97KB (76%)
 ```
 
-## Options
-```bash
-# JSON output (for CI/CD)
-lean-stack-audit --json
+## How It Works
 
-# Verbose mode
-lean-stack-audit --verbose
-```
-
-## Detected Libraries
-
-- moment.js → Intl.DateTimeFormat
-- jQuery → Native DOM APIs
-- lodash → Vanilla JS utilities
-- axios → fetch API
-- And 10+ more...
+1.  **Scans `package.json`**: Identifies your production dependencies.
+2.  **Bundles with `esbuild`**: Creates a temporary, minified bundle for each dependency to inspect its true weight.
+3.  **Matches Patterns**: Checks against a database of known "bloated" libraries to suggest native alternatives.
+4.  **Reports**: Gives you a clear, actionable report.
 
 ## License
 
 MIT
-EOF
