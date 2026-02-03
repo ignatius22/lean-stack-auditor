@@ -61,15 +61,19 @@ lean-stack-auditor
 (Exit Code 0 if clean, 1 if policies violated)
 
 
+### Options
+
 ```bash
-# Verbose mode (See all dependencies, not just bloat)
-lean-stack-auditor --verbose
+# 1. Fast Policy Check (Rust)
+# Runs instantly in CI to block disallowed packages
+lean-stack-auditor
 
-# JSON output (Great for CI/CD)
-# JSON output (Great for CI/CD)
-lean-stack-auditor --json
+# 2. Deep Analysis (Node.js)
+# Generates detailed size reports, detects bloat, and vanilla alternatives.
+lean-stack-auditor --analyze
 
-# Auto-Fix Mode (Replace bloat with vanilla JS)
+# 3. Auto-Fix (Node.js)
+# Scans your code and auto-replaces bloat with vanilla JS.
 lean-stack-auditor --fix
 ```
 
@@ -105,23 +109,7 @@ Bundle size (minified+gzipped): 127KB
 💰 Total Potential Savings: 97KB (76%)
 ```
 
-## Configuration (Budget Enforcer)
 
-Create a `lean-stack.config.json` to enforce limits in CI:
-
-```json
-{
-  "maxBundleSize": "150KB",
-  "disallowed": ["moment", "lodash"],
-  "allowDuplicates": false
-}
-```
-
-Run with:
-```bash
-lean-stack-auditor --check-budget
-```
-(Exits with code 1 if failed)
 
 ## How It Works
 
