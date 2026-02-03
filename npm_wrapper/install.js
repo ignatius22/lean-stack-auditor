@@ -62,6 +62,25 @@ async function install() {
         if (process.platform !== 'win32') {
           fs.chmodSync(destPath, 0o755); // Make executable
         }
+        
+        // --- HYBRID INSTALL ---
+        console.log('📦 Installing Node Engine dependencies...');
+        const nodeEnginePath = path.resolve(__dirname, '../node_engine');
+        // Warning: in dev, this might be ../node_engine. In prod, slightly different.
+        // Let's assume repo structure is preserved on install or handled by npm pack.
+        // Actually, npm publish will include node_engine if not ignored.
+        
+        try {
+            if (fs.existsSync(nodeEnginePath)) {
+                execSync('npm install --production --no-audit', { cwd: nodeEnginePath, stdio: 'inherit' });
+            } else {
+                 console.warn('⚠️ Node Engine not found at ' + nodeEnginePath);
+            }
+        } catch (e) {
+            console.error('⚠️ Failed to install Node Engine deps:', e.message);
+        }
+        // --- END HYBRID INSTALL ---
+
         console.log('✅ Installed successfully!');
         resolve();
       });

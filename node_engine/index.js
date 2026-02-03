@@ -10,7 +10,7 @@ import { analyzeDependencies, formatSize } from "./lib/sizeAnalyzer.js";
 import { detectBloat } from "./lib/bloatDetector.js";
 import { runFixer } from "./lib/fixer.js";
 import { checkDuplicates, displayDuplicates } from "./lib/deduper.js";
-import { loadConfig, checkBudget } from "./lib/budget.js";
+
 
 const program = new Command();
 
@@ -195,7 +195,7 @@ program
   .option("-v, --verbose", "Show detailed analysis including all dependencies")
   .option("-j, --json", "Output results as JSON for CI/CD integration")
   .option("-f, --fix", "Automatically replace bloated libraries with vanilla JS")
-  .option("--check-budget", "Verify project against lean-stack.config.json (Exit 1 if failed)")
+
   .action(async (options) => {
     showLogo();
 
@@ -228,15 +228,7 @@ program
       const duplicates = await checkDuplicates();
       displayDuplicates(duplicates);
 
-      // Check Budget
-      const config = loadConfig();
-      if (options.checkBudget || config) {
-        const passed = checkBudget(config, results, duplicates);
-        if (!passed && options.checkBudget) {
-            console.log("Budget failed. Exiting with error code 1.");
-            process.exit(1);
-        }
-      }
+
 
       // Run fixer if requested
       if (options.fix && results.bloat.length > 0) {

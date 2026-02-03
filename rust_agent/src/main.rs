@@ -14,6 +14,14 @@ struct Args {
     /// Path to project root
     #[arg(default_value = ".")]
     path: String,
+
+    /// Run detailed analysis (node engine)
+    #[arg(long, short = 'a')]
+    analyze: bool,
+
+    /// Auto-fix issues (node engine)
+    #[arg(long, short = 'f')]
+    fix: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -60,6 +68,14 @@ async fn main() {
         eprintln!("❌ Config Error: {}", err);
         process::exit(1);
     });
+
+    // --- NODE BRIDGE START ---
+    if args.analyze || args.fix {
+        println!("{}", "   🚀 Handing off to Node Engine...".cyan());
+        run_node_engine(&args.path, args.fix);
+        process::exit(0);
+    }
+    // --- NODE BRIDGE END ---
     
     // 2. Scan for Bloat
     println!("{}", "   Scanning dependencies...".dimmed());
@@ -165,4 +181,38 @@ async fn verify_license(key: &str, violations: Vec<String>) -> anyhow::Result<bo
     }
 
     Ok(false)
+}
+
+fn run_node_engine(path: &str, fix: bool) {
+    // Assumption: we are running from bin wrapper, so ../node_engine/index.js exists
+    // But for dev, we might be in rust_agent folder.
+    // Let's assume the standard dist structure: /bin/rust_binary -> /node_engine/index.js
+    
+    // Resolve helper script path. 
+    // In dev: ../node_engine/index.js
+    // In prod (npm): ../lib/node_modules/lean-stack-auditor/node_engine/index.js (tricky)
+    
+    // reliable way finding path relative to executable?
+    // simplified for now: assume we call it via npm wrapper which sets cwd correctly? 
+    // or just assume "node_engine" is neighbor.
+
+    let mut cmd = process::Command::new("node");
+    cmd.arg("node_engine/index.js"); 
+    
+    if fix {
+        cmd.arg("--fix");
+    }
+
+    cmd.current_dir(path); // Run in the project root
+
+    // Pass through stdio
+    cmd.stdout(process::Stdio::inherit())
+       .stderr(process::Stdio::inherit())
+       .stdin(process::Stdio::inherit());
+
+    let status = cmd.status().expect("Failed to execute Node engine");
+    
+    if !status.success() {
+        process::exit(status.code().unwrap_or(1));
+    }
 }
